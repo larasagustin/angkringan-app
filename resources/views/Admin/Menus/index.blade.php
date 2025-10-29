@@ -52,7 +52,7 @@
     }
 
     .btn-delete {
-        background-color: #e97a7a;
+        background-color: #ddb680ff;
         color: white;
         border: none;
         padding: 6px 12px;
@@ -116,7 +116,7 @@
     <table class="table table-bordered table-striped align-middle">
         <thead>
             <tr>
-                <th style="width: 50px;">#</th>
+                <th style="width: 50px;">No</th>
                 <th>Nama Menu</th>
                 <th>Kategori</th>
                 <th>Harga</th>
@@ -133,16 +133,25 @@
                     <td>Rp{{ number_format($menu->harga, 0, ',', '.') }}</td>
                     <td>{{ $menu->stok }}</td>
                     <td>
-                        <a href="{{ route('menus.edit', $menu->id) }}" class="btn-edit me-2">
-                            <i class="fa fa-pen"></i>
-                        </a>
-                        <form action="{{ route('menus.destroy', $menu->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn-delete" onclick="return confirm('Yakin ingin menghapus menu ini?')">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </form>
+<a href="{{ route('menus.edit', $menu->id) }}" 
+   class="btn btn-sm d-inline-flex align-items-center justify-content-center"
+   style="width:42px; height:42px; border-radius:10px; background-color:#f5d7a1; color:#6b4e16;">
+    <i class="fa fa-pen"></i>
+</a>
+
+
+<form action="{{ route('menus.destroy', $menu->id) }}" method="POST" class="d-inline delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="button" 
+        class="btn btn-sm btn-delete d-inline-flex align-items-center justify-content-center"
+        style="width:42px; height:42px; border-radius:10px; background-color:#e0b98a; color:#fff;"
+        data-nama="{{ $menu->nama }}">
+        <i class="fa fa-trash"></i>
+    </button>
+</form>
+
+
                     </td>
                 </tr>
             @empty
@@ -162,3 +171,34 @@
     </div>
 </div>
 @endsection
+{{-- CDN SweetAlert2 --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const form = this.closest('form');
+            const namaMenu = this.dataset.nama;
+
+            Swal.fire({
+                title: 'Hapus Menu?',
+                text: `Yakin ingin menghapus "${namaMenu}"? Data ini tidak bisa dikembalikan.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+

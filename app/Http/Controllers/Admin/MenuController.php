@@ -8,11 +8,21 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    public function index()
-    {
-        $menus = Menu::latest()->get();
-        return view('admin.menus.index', compact('menus'));
+public function index(Request $request)
+{
+    $query = Menu::query();
+
+    // Fitur cari
+    if ($request->has('search') && !empty($request->search)) {
+        $query->where('nama', 'like', '%' . $request->search . '%');
     }
+
+    $menus = $query->latest()->paginate(10);
+
+    return view('admin.menus.index', compact('menus'));
+}
+
+
 
     public function create()
     {
@@ -52,11 +62,11 @@ class MenuController extends Controller
         return view('admin.menus.show', compact('menu'));
     }
 
-    public function edit(Menu $menu)
-    {
-        $kategories = ['Makanan', 'Minuman', 'Snack', 'Lainnya'];
-        return view('admin.menus.edit', compact('menu', 'kategories'));
-    }
+public function edit(Menu $menu)
+{
+    $kategories = ['Makanan', 'Minuman', 'Snack', 'Lainnya'];
+    return view('Admin.Menus.edit', compact('menu', 'kategories'));
+}
 
     public function update(Request $request, Menu $menu)
     {
